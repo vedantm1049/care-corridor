@@ -1,0 +1,862 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>[hidden]{display:none!important}img{max-width:100%}</style><title>Care Corridor for Insurers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: header + tab bar; estimator = controls rail left, boarding-pass result right; stacks to one column on phones */
+:root{
+  --bg:#F2F5F4; --surface:#FFFFFF; --sunk:#E8EEED; --ink:#10282C; --muted:#56696C; --line:#D3DEDC;
+  --accent:#0A6A64; --accent-ink:#FFFFFF; --accent-soft:#DCEEEB;
+  --india:#B4620C; --travel:#E0B477; --india-soft:#F6E7D4;
+  --uae:#3C5A74; --uae-soft:#E0E8EF;
+  --good:#1C7A4A; --good-soft:#D9F0E3; --bad:#B2362B; --bad-soft:#F7DFDB; --warn:#8A5A00; --warn-soft:#FBEFD2;
+  --f-display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1618; --surface:#122427; --sunk:#0E1D20; --ink:#E3ECEB; --muted:#8FA3A5; --line:#23393C;
+    --accent:#3DB5AA; --accent-ink:#04201D; --accent-soft:#15373A;
+    --india:#E8994A; --travel:#8C6A3E; --india-soft:#3A2A18;
+    --uae:#8EB0CD; --uae-soft:#1B2D3C;
+    --good:#4CC48A; --good-soft:#12352A; --bad:#F07C70; --bad-soft:#3B1D1A; --warn:#F0C060; --warn-soft:#3A2F14;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+    --bg:#0B1618; --surface:#122427; --sunk:#0E1D20; --ink:#E3ECEB; --muted:#8FA3A5; --line:#23393C;
+    --accent:#3DB5AA; --accent-ink:#04201D; --accent-soft:#15373A;
+    --india:#E8994A; --travel:#8C6A3E; --india-soft:#3A2A18;
+    --uae:#8EB0CD; --uae-soft:#1B2D3C;
+    --good:#4CC48A; --good-soft:#12352A; --bad:#F07C70; --bad-soft:#3B1D1A; --warn:#F0C060; --warn-soft:#3A2F14;
+    color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:28px 56px}
+a{color:var(--accent)}
+.num{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--f-mono)}
+
+/* header */
+header.top{display:grid;gap:10px;margin-bottom:22px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,5vw,52px);line-height:1;margin:0;letter-spacing:-.02em;text-wrap:balance}
+.lede{font-size:17px;max-width:68ch;margin:0;color:var(--ink)}
+.byline{font-size:13px;color:var(--muted);margin:0}
+
+.toprow{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.theme-btn{font:500 13px var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.theme-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.reasons{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.reason{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;display:grid;gap:6px;align-content:start}
+.reason h4{margin:0;font-size:16px;font-family:var(--f-display);font-weight:700}
+.reason p{margin:0;font-size:14px;color:var(--muted)}
+.reason .fig{font-family:var(--f-mono);font-size:13px;color:var(--accent)}
+.faq{display:grid;gap:12px}
+.faq div{display:grid;gap:2px}
+.faq b{font-size:14.5px}
+.faq span{font-size:14px;color:var(--muted)}
+.member-card{background:var(--accent-soft);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;display:grid;gap:8px}
+.member-card h3{margin:0;font-family:var(--f-display);font-size:18px}
+.member-card ul{margin:0;padding-left:18px;font-size:14px;display:grid;gap:3px}
+/* tabs */
+nav.tabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:22px}
+nav.tabs button{font:500 14px var(--f-body);color:var(--muted);background:none;border:0;border-bottom:2px solid transparent;padding:10px 12px;cursor:pointer;margin-bottom:-1px}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+nav.tabs button:focus-visible,.chip:focus-visible,.seg button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* estimator grid */
+.grid{display:grid;grid-template-columns:320px minmax(0,1fr);grid-template-areas:"rail pass" "rail rest";grid-template-rows:auto 1fr;gap:24px;align-items:start}
+.grid>.rail{grid-area:rail}.grid>.pass{grid-area:pass}.grid>.rest{grid-area:rest}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"pass" "rail" "rest";grid-template-rows:auto}}
+.rail{display:grid;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.field{display:grid;gap:8px}
+.label{font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 13px var(--f-body);color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:999px;padding:6px 11px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.chip .code{font-family:var(--f-mono);font-size:11px;opacity:.75;margin-left:4px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--sunk);border:1px solid var(--line);border-radius:8px;padding:3px;gap:3px}
+.seg.c2{grid-template-columns:repeat(2,1fr)}
+.seg button{font:500 13px var(--f-body);background:none;border:0;border-radius:6px;padding:6px 4px;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.rangehint{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.readout{font-family:var(--f-mono);font-size:14px}
+.toggle{display:flex;align-items:flex-start;gap:10px;font-size:14px;cursor:pointer}
+.toggle input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px}
+.toggle small{display:block;color:var(--muted);font-size:12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.inp{display:grid;gap:4px;font-size:12px;color:var(--muted)}
+.inp input,.inp select,select.inp-s{font:500 14px var(--f-mono);color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:7px 8px;width:100%;min-width:0}
+details.adv{border-top:1px solid var(--line);padding-top:12px}
+details.adv summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--accent)}
+details.adv .row2{margin-top:12px}
+.stepper{display:flex;align-items:center;gap:8px}
+.stepper button{width:32px;height:32px;border-radius:6px;border:1px solid var(--line);background:var(--sunk);color:var(--ink);font:600 16px var(--f-body);cursor:pointer}
+.stepper output{font-family:var(--f-mono);font-size:15px;min-width:70px;text-align:center}
+
+/* boarding pass */
+.pass{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.pass-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:14px 20px;background:var(--accent);color:var(--accent-ink)}
+.route{font-family:var(--f-mono);font-size:22px;font-weight:500;letter-spacing:.04em}
+.route .arrow{opacity:.7;margin-inline:8px}
+.pass-head>*{min-width:0}
+.pass-meta{font-size:13px;opacity:.92;overflow-wrap:anywhere}
+.pass-body{display:grid;grid-template-columns:minmax(0,1fr) 28px minmax(0,1.35fr)}
+@media (max-width:640px){.pass-body{grid-template-columns:minmax(0,1fr)}.perf{display:none}}
+.side{padding:18px 20px;display:grid;gap:10px;align-content:start;min-width:0}
+.side h3{margin:0;font-family:var(--f-display);font-size:16px;font-weight:700}
+.side .tot{font-family:var(--f-display);font-size:28px;font-weight:700;line-height:1.1}
+.uae-side .tot{color:var(--uae)}
+.in-side .tot{color:var(--india)}
+.perf{background:radial-gradient(circle at 50% 0,var(--bg) 9px,transparent 10px) top/100% 20px repeat-y;border-inline:1px dashed var(--line)}
+ul.items{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+ul.items li{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:8px;align-items:baseline;font-size:13.5px}
+ul.items li .v{font-family:var(--f-mono);font-size:13px;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:2px;display:inline-block;transform:translateY(-1px)}
+.g-hosp{background:var(--india)} .g-travel{background:var(--travel)} .g-trudoc{background:var(--accent)} .g-incent{background:var(--muted)} .g-uae{background:var(--uae)}
+.note{font-size:12.5px;color:var(--muted)}
+.verdict{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--line);border-top:1px solid var(--line)}
+.verdict>div{background:var(--surface);padding:14px 20px;display:grid;gap:2px;align-content:start}
+.verdict .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.verdict .big{font-family:var(--f-display);font-size:30px;font-weight:700;line-height:1.1}
+.pos{color:var(--good)} .neg{color:var(--bad)}
+.bars{padding:16px 20px;border-top:1px solid var(--line);display:grid;gap:10px}
+.barrow{display:grid;grid-template-columns:110px minmax(0,1fr) 100px;gap:10px;align-items:center;font-size:13px}
+@media (max-width:640px){.barrow{grid-template-columns:62px minmax(0,1fr) 86px;gap:8px}}
+.barrow .bv{font-family:var(--f-mono);text-align:right;font-size:12.5px}
+.track{height:18px;display:flex;border-radius:4px;overflow:hidden;background:transparent}
+.track span{height:100%}
+.hatch{background:repeating-linear-gradient(135deg,var(--good) 0 3px,var(--good-soft) 3px 7px)}
+.over{background:repeating-linear-gradient(135deg,var(--bad) 0 3px,var(--bad-soft) 3px 7px)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted)}
+.flag{margin:0;padding:12px 20px;border-top:1px solid var(--line);background:var(--warn-soft);color:var(--ink);font-size:13px}
+.flag b{color:var(--warn)}
+
+/* sections */
+.stack{display:grid;gap:24px;min-width:0}
+.stack>*,.grid>*,.two>*{min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px}
+h2{font-family:var(--f-display);font-weight:700;font-size:22px;margin:0 0 4px;letter-spacing:-.01em;text-wrap:balance}
+.sub{margin:0 0 14px;color:var(--muted);font-size:14px;max-width:72ch}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+tr.sel td{background:var(--accent-soft)}
+tr.click{cursor:pointer}
+tr.click:hover td{background:var(--sunk)}
+tfoot td{font-weight:600}
+.lbar{position:relative;height:12px;min-width:140px}
+.lbar .zero{position:absolute;top:-3px;bottom:-3px;width:1px;background:var(--muted)}
+.lbar .b{position:absolute;top:0;bottom:0;border-radius:2px}
+.hosp-mini{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.hcard{border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:grid;gap:6px;background:var(--surface);align-content:start}
+.hcard h4{margin:0;font-size:15px;font-weight:600}
+.hcard .city{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.badges{display:flex;flex-wrap:wrap;gap:4px}
+.badge{font:600 10.5px var(--f-mono);padding:2px 6px;border-radius:4px;letter-spacing:.03em}
+.b-jci{background:var(--good-soft);color:var(--good)}
+.b-nabh{background:var(--uae-soft);color:var(--uae)}
+.b-ver{background:var(--warn-soft);color:var(--warn)}
+.b-gulf{background:var(--accent-soft);color:var(--accent)}
+.b-str{background:var(--india-soft);color:var(--india)}
+.hcard p{margin:0;font-size:13px;color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:grid;gap:2px}
+.tile .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.tile .big{font-family:var(--f-display);font-size:28px;font-weight:700}
+.tile.tru .big{color:var(--accent)}
+.tile.ins .big{color:var(--good)}
+td input.vol{width:84px;font:500 13px var(--f-mono);color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:6px;padding:5px 6px;text-align:right}
+.controls-inline{display:flex;flex-wrap:wrap;gap:18px;align-items:end;margin-bottom:14px}
+.controls-inline .inp{min-width:160px}
+
+/* journey */
+ol.tl{list-style:none;margin:0;padding:0;position:relative;display:grid;gap:0}
+ol.tl li{display:grid;grid-template-columns:88px 18px minmax(0,1fr);gap:12px;padding-bottom:18px;position:relative}
+ol.tl li:before{content:"";position:absolute;left:96px;top:14px;bottom:0;width:2px;background:var(--line)}
+ol.tl li:last-child:before{display:none}
+.tday{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);text-align:right;padding-top:2px}
+.tnode{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);background:var(--surface);margin-top:2px;position:relative;z-index:1}
+li.own-trudoc .tnode{background:var(--accent);border-color:var(--accent)}
+li.own-hospital .tnode{border-color:var(--india)}
+li.own-insurer .tnode{border-color:var(--uae)}
+.tbody h4{margin:0;font-size:15px;font-weight:600;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tbody p{margin:2px 0 0;font-size:13.5px;color:var(--muted);max-width:64ch}
+.owner{font:600 10.5px var(--f-mono);padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em}
+.o-trudoc{background:var(--accent);color:var(--accent-ink)}
+.o-hospital{background:var(--india-soft);color:var(--india)}
+.o-insurer{background:var(--uae-soft);color:var(--uae)}
+.o-travel{background:var(--sunk);color:var(--muted)}
+.why{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.why div{border-top:2px solid var(--accent);padding-top:10px}
+.why h4{margin:0 0 4px;font-size:15px}
+.why p{margin:0;font-size:13.5px;color:var(--muted)}
+.two{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:900px){.two{grid-template-columns:minmax(0,1fr)}}
+
+/* sources */
+.src h3{font-size:14px;margin:18px 0 6px;font-family:var(--f-body);font-weight:600}
+.src ol{margin:0;padding-left:22px;display:grid;gap:4px;font-size:13.5px}
+.src li{overflow-wrap:anywhere}
+.method ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:14px;max-width:80ch}
+footer{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);display:grid;gap:4px}
+@media (prefers-reduced-motion:no-preference){.track span,.lbar .b{transition:width .25s ease,left .25s ease}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="toprow"><div class="eyebrow" data-ins="Illustrative insurer brief · Sept 2026">GCC → India planned surgery · new revenue line · v1 · Sept 2026</div><button class="theme-btn" id="themeBtn" type="button" aria-label="Switch colour theme"></button></div>
+    <h1>Care Corridor</h1>
+    <p class="lede" data-ins="Cut the cost of planned surgery by offering members treatment at accredited hospitals in five Indian tier-2 cities, with one UAE partner managing the patient before, during and after the trip.">A new revenue line for a UAE virtual care provider: coordinate planned surgery for UAE insurers at accredited hospitals in five Indian tier-2 cities, and own the patient before and after the trip.</p>
+    <p class="byline" data-ins="Public data only. Indicative ranges, not quotes. Your claims data replaces every assumption.">Illustrative model. Public data only. Indicative ranges, not hospital quotes.</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button role="tab" id="tab-estimator" data-tab="estimator" aria-selected="true">Case estimator</button>
+    <button role="tab" id="tab-deal" data-tab="deal" aria-selected="false" data-ins="Annual saving">Insurer deal sizer</button>
+    <button role="tab" id="tab-members" data-tab="members" aria-selected="false" class="only-i">Why members say yes</button>
+    <button role="tab" id="tab-journey" data-tab="journey" aria-selected="false">Patient journey</button>
+    <button role="tab" id="tab-hospitals" data-tab="hospitals" aria-selected="false">Hospitals</button>
+    <button role="tab" id="tab-sources" data-tab="sources" aria-selected="false">Sources and method</button>
+  </nav>
+
+  <!-- ESTIMATOR -->
+  <section id="p-estimator" role="tabpanel" aria-labelledby="tab-estimator">
+    <div class="grid">
+      <aside class="rail" aria-label="Case inputs">
+        <div class="field"><div class="label">Procedure</div><div class="chips" id="procChips"></div></div>
+        <div class="field"><div class="label">Destination city</div><div class="chips" id="cityChips"></div></div>
+        <div class="field"><div class="label">Hospital price point</div>
+          <div class="seg" id="tierSeg"><button data-t="0">Value</button><button data-t="1">Mid</button><button data-t="2" title="Premium hospital and business class flights">Premium</button></div>
+        </div>
+        <div class="field">
+          <div class="label"><label for="uaePrice">UAE surgery package price</label></div>
+          <input type="range" id="uaePrice" step="500">
+          <div class="rangehint"><span id="uaeLo"></span><span class="readout" id="uaeVal"></span><span id="uaeHi"></span></div>
+        </div>
+        <div class="field">
+          <div class="label">Days in India</div>
+          <div class="stepper"><button id="dMinus" aria-label="One day fewer">−</button><output id="daysOut" class="num"></output><button id="dPlus" aria-label="One day more">+</button></div>
+          <div class="note" id="daysSplit"></div>
+        </div>
+        <div class="field"><div class="label">India price basis</div><div class="seg c2" id="rateSeg"><button data-r="1" data-ins="List price">International prices</button><button data-r="0.67" data-ins="Corridor rate">Indian-patient prices</button></div><div class="note" data-ins="Hospitals list foreign patients at about 50% more than Indian patients. The corridor rate uses the Indian price. Bulk contracts should go lower still.">Listings show foreigners paying about 50% more than Indian patients for the same package. A negotiated bulk rate should land at or below the Indian price.</div></div>
+        <label class="toggle"><input type="checkbox" id="worst"><span>Plan for a complication<small>Adds 3 hospital days at USD 300 and 5 more days in India.</small></span></label>
+        <div class="field only-t"><div class="label">Provider coordination fee</div>
+          <div class="seg c2" id="feeSeg"><button data-f="share">Share of saving</button><button data-f="fixed">Fixed</button></div>
+          <div class="row2">
+            <label class="inp" for="feeShare">Share of saving %<input id="feeShare" type="number" min="0" max="60" step="5" value="20"></label>
+            <label class="inp" for="fee">Minimum fee AED<input id="fee" type="number" min="0" step="500" value="3000"></label>
+          </div>
+          <div class="note" id="feeNote"></div>
+        </div>
+        <label class="inp" for="incentive">Cash to patient (AED)<input id="incentive" type="number" min="0" step="500" value="0"></label>
+        <details class="adv">
+          <summary>Unit costs</summary>
+          <div class="row2">
+            <label class="inp" for="apt">Apartment ₹/night<input id="apt" type="number" min="0" step="500" value="6500"></label>
+            <label class="inp" for="nurse">Private nurse ₹/day<input id="nurse" type="number" min="0" step="250" value="3000"></label>
+            <label class="inp" for="transfers">Transfers ₹ per trip<input id="transfers" type="number" min="0" step="500" value="9000"></label>
+            <label class="inp" for="meals">Meals ₹/person/day<input id="meals" type="number" min="0" step="100" value="1000"></label>
+            <label class="inp" for="inPhysio">Vetted home physio ₹/session<input id="inPhysio" type="number" min="0" step="100" value="2000"></label>
+            <label class="inp" for="wellthy">Digital programme AED<input id="wellthy" type="number" min="0" step="250" value="1000"></label>
+            <label class="inp" for="seat">Legroom seat AED/flight<input id="seat" type="number" min="0" step="25" value="200"></label>
+            <label class="inp" for="vNurse">UAE nurse visit AED<input id="vNurse" type="number" min="0" step="25" value="350"></label>
+            <label class="inp" for="vPhysio">UAE physio visit AED<input id="vPhysio" type="number" min="0" step="25" value="350"></label>
+            <label class="inp" for="vTele">Teleconsult AED<input id="vTele" type="number" min="0" step="25" value="150"></label>
+          </div>
+          <p class="note" style="margin:10px 0 0">FX: USD 1 = AED 3.6725, USD 1 = ₹96. Provider prices are placeholders to replace with real rates. Physio is priced at the specialist (MPT) home rate, ₹1,500–2,500 in Bangalore listings.</p>
+        </details>
+      </aside>
+
+        <article class="pass" aria-live="polite">
+          <div class="pass-head">
+            <div class="route"><span>DXB</span><span class="arrow">→</span><span id="rCode">COK</span></div>
+            <div class="pass-meta" id="passMeta"></div>
+          </div>
+          <div class="pass-body">
+            <div class="side uae-side">
+              <h3>Surgery in Dubai</h3>
+              <div class="tot num" id="uaeTot"></div>
+              <ul class="items" id="uaeItems"></ul>
+              <p class="note" id="uaeNote"></p>
+            </div>
+            <div class="perf" aria-hidden="true"></div>
+            <div class="side in-side">
+              <h3 id="inTitle">The corridor</h3>
+              <div class="tot num" id="inTot"></div>
+              <ul class="items" id="inItems"></ul>
+            </div>
+          </div>
+          <div class="verdict">
+            <div><span class="k" data-ins="You save per case">Insurer saves per case</span><span class="big num" id="vSave"></span><span class="note" id="vPct"></span></div>
+            <div><span class="k">Breakeven UAE cost</span><span class="big num" id="vBreak"></span><span class="note">UAE surgery price above which the corridor saves</span></div>
+            <div class="only-t"><span class="k">Provider earns per case</span><span class="big num" id="vTru" style="color:var(--accent)"></span><span class="note">Fee, physio in India and at home, teleconsults</span></div>
+            <div class="only-i"><span class="k">Member pays</span><span class="big num" id="vMember" style="color:var(--accent)">AED 0</span><span class="note" id="vMemberNote">Flights, stay and care are covered</span></div>
+          </div>
+          <div class="bars">
+            <div class="barrow"><span>In Dubai</span><div class="track" id="barU"></div><span class="bv" id="barUv"></span></div>
+            <div class="barrow"><span id="barIl">Corridor</span><div class="track" id="barI"></div><span class="bv" id="barIv"></span></div>
+            <div class="legend"><span><i class="dot g-hosp"></i> Hospital</span><span><i class="dot g-travel"></i> Travel and stay</span><span><i class="dot g-trudoc"></i> <span data-ins="Managed care">Provider</span></span><span><i class="dot hatch" style="width:14px"></i> Saving</span></div>
+          </div>
+          <p class="flag" id="flyFlag"></p>
+        </article>
+      <div class="stack rest">
+
+        <section class="card">
+          <h2>Which procedures clear the bar</h2>
+          <p class="sub">All seven procedures at typical UAE prices and their default stays, with the city, price point and options chosen above. Procedures that are safe to fly sooner cost less to recover in India. Click a row to open it.</p>
+          <div class="tablewrap"><table id="league"><thead><tr><th>Procedure</th><th class="r">UAE, with rehab</th><th class="r">Corridor</th><th class="r">Saving</th><th>Fit to fly</th><th>Per case</th></tr></thead><tbody></tbody></table></div>
+        </section>
+
+        <section class="card">
+          <h2 id="hmTitle">Hospitals for this case</h2>
+          <p class="sub">Matched on the procedure and city. Prices above are ranges until a hospital sends a written quote.</p>
+          <div class="hosp-mini" id="hospMini"></div>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEAL SIZER -->
+  <section id="p-deal" role="tabpanel" aria-labelledby="tab-deal" hidden>
+    <div class="stack">
+      <div>
+        <h2 data-ins="Your annual saving">Size the deal for one insurer</h2>
+        <p class="sub" data-ins="Uses each procedure's typical UAE price and default stay, plus the choices on the case estimator. Volumes below are examples. Enter your own yearly case counts.">Uses each procedure's typical UAE price and default stay, plus the city, price point and options set on the estimator. Volumes below are examples. Replace them with the insurer's own claims counts.</p>
+      </div>
+      <div class="tiles">
+        <div class="tile"><span class="k">Cases moved per year</span><span class="big num" id="tCases"></span></div>
+        <div class="tile ins"><span class="k" data-ins="You save per year">Insurer saves per year</span><span class="big num" id="tSave"></span></div>
+        <div class="tile tru only-t"><span class="k">Provider revenue per year</span><span class="big num" id="tRev"></span></div>
+        <div class="tile only-t"><span class="k">India hospital spend</span><span class="big num" id="tHosp"></span></div>
+        <div class="tile only-i"><span class="k">Saving on these cases</span><span class="big num" id="tPct"></span></div>
+        <div class="tile only-i"><span class="k">Average saving per case</span><span class="big num" id="tAvg"></span></div>
+      </div>
+      <section class="card">
+        <div class="controls-inline">
+          <label class="inp" for="uptake">Share of eligible patients who accept travel: <b class="readout" id="uptakeOut"></b><input type="range" id="uptake" min="2" max="40" step="1" value="10"></label>
+          <label class="toggle"><input type="checkbox" id="onlySave" checked><span>Count only procedures that save money</span></label>
+        </div>
+        <div class="tablewrap"><table id="deal"><thead><tr><th>Procedure</th><th class="r">Eligible cases / yr</th><th class="r">Saving / case</th><th class="r">Cases moved</th><th class="r" data-ins="You save">Insurer saves</th><th class="r only-t">Provider revenue</th></tr></thead><tbody></tbody><tfoot></tfoot></table></div>
+        <p class="note" style="margin-top:10px" data-ins="Only members who opt in travel. Everyone else is treated in the UAE as today.">India hospital spend is money that flows to partner hospitals, which is the provider's leverage for negotiated package rates.</p>
+      </section>
+    </div>
+  </section>
+
+  <!-- MEMBERS (insurer only) -->
+  <section id="p-members" role="tabpanel" aria-labelledby="tab-members" class="only-i" hidden>
+    <div class="stack">
+      <div>
+        <h2>Why members would choose India</h2>
+        <p class="sub">The saving only happens if members opt in. These are the reasons they would, and the cases where they should stay on the UAE route.</p>
+      </div>
+      <div class="member-card" id="memberCard"></div>
+      <div class="reasons">
+        <div class="reason"><h4>Nothing to pay</h4><p>UAE plans usually carry a 10 to 20% co-pay on planned surgery. The corridor can waive it, and can add a cash incentive on top.</p><span class="fig" id="copayFig"></span></div>
+        <div class="reason"><h4>Recovery near family</h4><p>About 4.3 million Indians live in the UAE, roughly 35% of residents, and Kerala is the largest home state. For many members, Kochi or Thiruvananthapuram is a trip home.</p></div>
+        <div class="reason"><h4>A companion goes too</h4><p>Flights, the apartment and meals are covered for one companion. In the UAE, family often has to take leave to care for the patient at home.</p></div>
+        <div class="reason"><h4>More support while recovering</h4><p id="supportTxt">A two-bedroom apartment, a private nurse and physio at the apartment for the first weeks.</p></div>
+        <div class="reason"><h4>Accredited hospitals</h4><p>Partner hospitals hold international (JCI) or national accreditation, and many already treat Gulf patients through international patient desks.</p></div>
+        <div class="reason"><h4>The same doctor at home</h4><p>A UAE doctor sees the member before travel, follows recovery by video, and arranges care after return.</p></div>
+      </div>
+      <div class="two">
+        <section class="card">
+          <h2>Questions members will ask</h2>
+          <div class="faq">
+            <div><b>What if something goes wrong?</b><span>The hospital stay is extended as needed, and the all-in price includes a reserve for it. The UAE doctor stays in touch throughout.</span></div>
+            <div><b>Will I lose more days off work?</b><span>No. Recovery takes the same time wherever the surgery happens. The member simply recovers in India first.</span></div>
+            <div><b>Who handles visas, flights and transfers?</b><span>The provider does: e-Medical visas, flights with extra-legroom or business class seats, and airport transfers.</span></div>
+            <div><b>What happens after I come home?</b><span>Physio and nursing continue at home in the UAE, and the doctor who saw you before the trip follows up.</span></div>
+          </div>
+        </section>
+        <section class="card">
+          <h2>Who should stay on the UAE route</h2>
+          <ul class="items">
+            <li><i class="dot g-uae"></i><span>Emergencies and anything that cannot wait for travel.</span><span></span></li>
+            <li><i class="dot g-uae"></i><span>Members the UAE doctor judges unfit to fly, or too complex to treat away from home.</span><span></span></li>
+            <li><i class="dot g-uae"></i><span>Treatment that needs long follow-up, such as chemotherapy.</span><span></span></li>
+            <li><i class="dot g-uae"></i><span>Anyone who prefers not to travel. Opting out carries no penalty.</span><span></span></li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <!-- JOURNEY -->
+  <section id="p-journey" role="tabpanel" aria-labelledby="tab-journey" hidden>
+    <div class="two">
+      <section class="card">
+        <h2 id="jTitle">Patient journey</h2>
+        <p class="sub" id="jSub"></p>
+        <ol class="tl" id="timeline"></ol>
+      </section>
+      <div class="stack">
+        <section class="card only-i">
+          <h2>Why one UAE partner</h2>
+          <p class="sub">Coordinators such as Vaidam and Lyfboat hand the member over at the airport. Here the same UAE clinical team is responsible from the first consult to the 90-day outcome.</p>
+          <div class="why">
+            <div><h4>Clinical oversight at both ends</h4><p>A UAE doctor reviews the case before travel, follows recovery by video, and delivers home care after return.</p></div>
+            <div><h4>Accredited hospitals only</h4><p>Partner hospitals are vetted for accreditation, surgical volume and an international patient desk.</p></div>
+            <div><h4>Outcomes you can audit</h4><p>Complications, readmissions and member scores are reported for every case at 90 days.</p></div>
+          </div>
+        </section>
+        <section class="card only-i">
+          <h2>What you get</h2>
+          <ul class="items">
+            <li><i class="dot g-trudoc"></i><span>Members opt in. No one is asked to travel against their wishes.</span><span></span></li>
+            <li><i class="dot g-trudoc"></i><span>One all-in price per case, agreed before travel.</span><span></span></li>
+            <li><i class="dot g-trudoc"></i><span>Nothing paid up front by the member.</span><span></span></li>
+            <li><i class="dot g-trudoc"></i><span>Rehab continues at home in the UAE after return.</span><span></span></li>
+            <li><i class="dot g-trudoc"></i><span>Managed care fee is a share of the saving, so it applies only when you save.</span><span></span></li>
+          </ul>
+        </section>
+        <section class="card only-t">
+          <h2>Why a UAE provider, not a facilitator</h2>
+          <p class="sub">Coordinators such as Vaidam, Lyfboat and My 1Health already sell trips to India. They hand the patient over at the airport. A UAE provider can own both ends.</p>
+          <div class="why">
+            <div><h4>It already holds the payer</h4><p>Insurer and employer contracts exist today. A coordinator has to win them one at a time.</p></div>
+            <div><h4>It owns the patient at home</h4><p>Teleconsults before the trip and home nursing after it are the provider's own services, billed in the UAE.</p></div>
+            <div><h4>It has a foot in India</h4><p>An Indian clinical team, in-house or through a partner, vets partner hospitals and runs the recovery network.</p></div>
+          </div>
+        </section>
+        <section class="card only-t">
+          <h2>Where the revenue sits</h2>
+          <p class="sub" id="revSub"></p>
+          <ul class="items" id="revItems"></ul>
+        </section>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOSPITALS -->
+  <section id="p-hospitals" role="tabpanel" aria-labelledby="tab-hospitals" hidden>
+    <div class="stack">
+      <div>
+        <h2>21 hospitals across five cities</h2>
+        <p class="sub">Chosen for Gulf air links, accreditation and an international patient desk. Green badges were confirmed in public sources. Amber badges need a check before any listing goes to an insurer.</p>
+      </div>
+      <div class="controls-inline">
+        <div class="field"><div class="label">City</div><div class="chips" id="hCityChips"></div></div>
+        <label class="inp" for="hProc">Procedure<select id="hProc" class="inp-s"></select></label>
+      </div>
+      <div class="hosp-mini" id="hospAll"></div>
+      <section class="card">
+        <h2>Why these five cities</h2>
+        <div class="tablewrap"><table><thead><tr><th>City</th><th>Airport</th><th>Case for it</th><th>Watch-out</th></tr></thead><tbody id="cityTable"></tbody></table></div>
+      </section>
+    </div>
+  </section>
+
+  <!-- SOURCES -->
+  <section id="p-sources" role="tabpanel" aria-labelledby="tab-sources" hidden>
+    <div class="two">
+      <section class="card method">
+        <h2>Method</h2>
+        <ul>
+          <li><b>UAE side</b> is the surgery package price in Dubai from public 2026 price guides and hospital packages. Insurer-negotiated rates can be lower, so the slider lets you enter the real figure.</li>
+          <li><b>India side</b> uses international-patient package ranges. Most published ranges come from metro hospitals, so tier-2 quotes should land at or below them, and substantially below once prices are negotiated for bulk volume.</li>
+          <li><b>Like for like.</b> Rehab after discharge is counted on both sides at the same visit prices. In the corridor, most physio happens in India during recovery and the rest at home through the provider. Most of the India stay is in an apartment, not a hospital.</li>
+          <li><b>Retail on both sides.</b> UAE prices are package or guide prices, not insurer rates. India prices are hospital list prices, for foreigners or for Indian patients.</li>
+          <li class="only-t"><b>Provider fee.</b> Default is a share of the saving (20%, minimum AED 3,000), so the provider is paid more where it creates more value. Switch to a flat fee to compare.</li>
+          <li class="only-t"><b>Digital programmes.</b> A 90-day app-based recovery programme is added for heart and weight-loss cases only. Physio in India is a provider-vetted network of specialist physiotherapists.</li>
+          <li class="only-i"><b>Managed care.</b> Coordination, teleconsults, specialist physio in India, home visits after return and a 90-day digital recovery programme for heart and weight-loss cases, shown as one line.</li>
+          <li><b>Estimates, clearly marked.</b> Apartment, transfers, legroom seats, meals, visa and non-Kochi airfares are estimates. Provider fee and visit prices are placeholders.</li>
+          <li><b>Not covered in v1:</b> Saudi baselines, organ and bone marrow transplants, and cancer care beyond prostatectomy. Transplants need extra approvals in India for foreign patients.</li>
+          <li><b>Not medical advice.</b> Fit-to-fly timings quote public guidance. The operating surgeon decides.</li>
+        </ul>
+        <h2 style="margin-top:22px" class="only-i">What we would need from you</h2>
+        <ul class="only-i">
+          <li>Yearly case counts and average paid amounts for these seven procedures on enhanced plans.</li>
+          <li>Current plan wording on planned treatment abroad.</li>
+          <li>One employer group or plan tier for a 6-month pilot.</li>
+        </ul>
+        <h2 style="margin-top:22px" class="only-t">Next steps to make it real</h2>
+        <ul class="only-t">
+          <li>Ask five anchor hospitals, one per city, for written all-in quotes on the seven procedures.</li>
+          <li>Pull one insurer's claims for these procedures to replace the example volumes and UAE prices.</li>
+          <li>Check which plan tiers already allow planned treatment abroad, and draft the benefit wording.</li>
+          <li>Confirm the amber accreditation badges.</li>
+        </ul>
+      </section>
+      <section class="card src" id="srcList"><h2>Sources</h2></section>
+    </div>
+  </section>
+
+  <footer>
+    <span data-ins="Care Corridor · illustrative model, not an offer · data checked 29 Sept 2026.">Care Corridor v1 · illustrative model · data checked 29 Sept 2026.</span>
+    <span>Figures are indicative. Every price is a public range or a labelled estimate, not a quote.</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+const AUD="insurer";
+function setTheme(t){document.documentElement.setAttribute("data-theme",t);const b=document.getElementById("themeBtn");if(b)b.textContent=t==="dark"?"☀ Light mode":"☾ Dark mode";try{localStorage.setItem("cc-theme",t)}catch(e){}}
+let theme="light";try{theme=localStorage.getItem("cc-theme")||"light"}catch(e){}
+setTheme(theme);
+document.getElementById("themeBtn").addEventListener("click",()=>setTheme(document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark"));
+if(AUD==="insurer"){document.querySelectorAll("[data-ins]").forEach(e=>e.textContent=e.dataset.ins);}
+document.querySelectorAll(AUD==="insurer"?".only-t":".only-i").forEach(e=>e.hidden=true);
+const USD=3.6725, INR=3.6725/96;
+
+const PROCS={
+  knee:{name:"Knee replacement",short:"Knee",uae:[40000,65000,100000],india:[3000,4000,6000],hosp:4,days:21,care:{physio:18,nurse:3,tele:3},flyShort:"6 wk (UK) · 2–3 wk in packages",
+    uaeStay:"3 to 5 nights in hospital",uaeSrc:"Zavis Dubai price guide, Mar–Apr 2026",indiaSrc:"Vaidam, Kochi-specific range",
+    fly:"UK guidance says wait 6 weeks for short-haul and 3 months for long-haul after joint replacement. US surgeons allow earlier travel with clot prevention. Dubai to Kochi is about 4 hours. The surgeon signs off.",joint:true},
+  hip:{name:"Hip replacement",short:"Hip",uae:[45000,75000,120000],india:[3500,5000,7000],hosp:6,days:21,care:{physio:16,nurse:3,tele:3},flyShort:"6 wk (UK) · 2–3 wk in packages",
+    uaeStay:"3 to 5 nights in hospital",uaeSrc:"Zavis Dubai price guide, Mar 2026",indiaSrc:"Shifam Health, HealthyBones (India range)",
+    fly:"Same guidance as knee: 6 weeks short-haul and 3 months long-haul in UK guidance, earlier with clot prevention in US practice. The surgeon signs off.",joint:true},
+  cabg:{name:"Heart bypass (CABG)",short:"Bypass",uae:[80000,130000,200000],india:[4000,5500,7500],hosp:7,days:18,care:{physio:8,nurse:6,tele:4},flyShort:"about 10 days",wellthy:"90-day digital heart recovery programme",
+    uaeStay:"5 to 7 nights in hospital, including intensive care",uaeSrc:"Lyfboat (AED 80k–150k); American Hospital and King's (AED 150k–200k)",indiaSrc:"Vaidam (USD 4k–6k), Apollo Delhi (USD 5.8k–7.5k)",
+    fly:"UK CAA: about 10 days after major chest surgery. Indian packages plan 17 to 20 days in the country."},
+  valve:{name:"Heart valve replacement",short:"Valve",uae:[103000,150000,200000],india:[6000,8000,11000],hosp:8,days:18,care:{physio:8,nurse:6,tele:4},flyShort:"about 10 days",wellthy:"90-day digital heart recovery programme",
+    uaeStay:"5 to 7 nights in hospital, including intensive care",uaeSrc:"Medigence (USD 28k–45k); Burjeel (AED 150k–200k)",indiaSrc:"Vaidam (USD 8k–11k), IndiCure (from USD 4.5k)",
+    fly:"UK CAA: about 10 days after major chest surgery. Packages plan 18 to 21 days in India."},
+  spine:{name:"Spinal fusion",short:"Spine",uae:[50000,80000,120000],india:[4500,6500,9500],hosp:4,days:12,care:{physio:16,nurse:3,tele:3},flyShort:"2–6 wk",
+    uaeStay:"2 to 5 nights in hospital",uaeSrc:"Lyfboat (AED 50k–120k); Emirates Hospitals (AED 40k–300k)",indiaSrc:"IndiCure (from USD 4.5k), Medigence (USD 6.5k–9.5k)",
+    fly:"Common advice is 2 to 6 weeks before flying, longer for long flights. The surgeon signs off."},
+  sleeve:{name:"Sleeve gastrectomy",short:"Sleeve",uae:[29000,35000,45000],india:[3500,5000,6500],hosp:3,days:7,care:{physio:0,nurse:2,tele:6},flyShort:"1–2 days",wellthy:"90-day digital weight programme",
+    uaeStay:"1 to 2 nights in hospital",uaeSrc:"Al Zahra (AED 29k), Mediclinic package (AED 35k)",indiaSrc:"Lyfboat (USD 4.8k), Max (from USD 5.5k)",
+    fly:"UK CAA: 1 to 2 days after keyhole surgery. Packages often plan about 10 days; 7 is enough if pre-op tests are done in the UAE before travel."},
+  prostate:{name:"Robotic prostatectomy",short:"Prostate",uae:[59000,80000,147000],india:[5500,7500,12500],hosp:3,days:10,care:{physio:0,nurse:4,tele:3},flyShort:"after catheter out, ~1 wk",
+    uaeStay:"a short hospital stay",uaeSrc:"CMC Dubai package (AED 80k); Lyfboat (USD 16k–40k)",indiaSrc:"Wellness Destination (USD 5.5k–6.5k), My 1Health (USD 6.5k–12.5k)",
+    fly:"UK CAA: 1 to 2 days after keyhole surgery, but the urinary catheter usually stays in for about a week, so plan the return after it comes out. The surgeon decides."}
+};
+const ORDER=["knee","hip","cabg","valve","spine","sleeve","prostate"];
+
+const CITIES={
+  COK:{name:"Kochi",eco:1250,biz:3250,fare:"sourced",why:"Densest cluster of JCI hospitals outside the metros. Aster and VPS groups also run hospitals in the UAE.",watch:"Monsoon June to September. Book recovery stays away from the busiest wards."},
+  TRV:{name:"Thiruvananthapuram",eco:1300,biz:3500,fare:"estimate",why:"KIMSHEALTH is heavily used by Gulf patients and runs hospitals in Oman, Bahrain and Qatar.",watch:"Beyond KIMS, accreditation of other hospitals is unconfirmed."},
+  CJB:{name:"Coimbatore",eco:1300,biz:3500,fare:"estimate",why:"Ganga Hospital for bone, joint and spine. PSG holds JCI Prime certification. GEM for GI and bariatric surgery.",watch:"Check direct flights. Some routes connect via other cities."},
+  AMD:{name:"Ahmedabad",eco:1300,biz:3500,fare:"estimate",why:"Two JCI hospitals with international wings. Serves the Gujarati diaspora in the Gulf.",watch:"Summer heat. Two of four hospitals need accreditation checks."},
+  JAI:{name:"Jaipur",eco:1300,biz:3500,fare:"estimate",why:"Three JCI hospitals, including Eternal (Mount Sinai affiliation). Replaced Mangaluru, which had no confirmed JCI hospital.",watch:"Serves North Indian and Pakistani-origin patients. Check direct flight frequency."}
+};
+const CORDER=["COK","TRV","CJB","AMD","JAI"];
+
+const HOSP=[
+  {n:"Aster Medcity",c:"COK",acc:["JCI"],s:["cabg","valve","knee","hip","spine"],gulf:true,p:"Quaternary hospital for high-risk, complex cases. The Aster brand also runs hospitals in the UAE."},
+  {n:"Amrita Hospital",c:"COK",acc:["JCI"],s:["cabg","valve","spine","knee"],p:"One of India's largest private academic hospitals. Strong heart surgery programme."},
+  {n:"VPS Lakeshore",c:"COK",acc:["JCI"],s:["knee","hip","sleeve"],gulf:true,p:"Dedicated international patient wing. Part of VPS Healthcare, the group linked to Burjeel in the UAE."},
+  {n:"Rajagiri Hospital",c:"COK",acc:["JCI"],s:["knee","hip","cabg"],p:"Green campus away from city traffic, suited to recovery. Strong heart-rhythm unit."},
+  {n:"Lisie Hospital",c:"COK",acc:[],s:["cabg","valve"],p:"Known for high-volume bypass surgery at lower cost."},
+  {n:"KIMSHEALTH",c:"TRV",acc:["NABH","ACHSI"],s:["cabg","valve","knee","spine"],gulf:true,p:"Heavily used by Middle East patients. International desk handles visa extensions for long recoveries."},
+  {n:"SP Medifort",c:"TRV",acc:[],s:[],p:"Describes itself as built to JCI standards. Accreditation not confirmed."},
+  {n:"Ananthapuri Hospitals",c:"TRV",acc:[],s:[],p:"Large tertiary hospital. Accreditation and international desk to confirm."},
+  {n:"PSG Hospitals",c:"CJB",acc:["JCI Prime","NABH"],s:["cabg","valve"],p:"First hospital in Tamil Nadu with JCI Prime certification (2021)."},
+  {n:"KMCH",c:"CJB",acc:[],s:["cabg","valve","knee"],p:"Among Coimbatore's strongest cardiac centres."},
+  {n:"Ganga Hospital",c:"CJB",acc:["NABH"],s:["knee","hip","spine"],p:"Coimbatore's best-known name for bone, joint and spine surgery."},
+  {n:"GKNM Hospital",c:"CJB",acc:["NABH"],s:["cabg"],p:"First NABH-accredited hospital in Tamil Nadu. Cardiology and cancer care."},
+  {n:"GEM Hospital",c:"CJB",acc:[],s:["sleeve"],p:"Leading centre for GI, laparoscopic and robotic GI surgery."},
+  {n:"Marengo CIMS",c:"AMD",acc:["JCI","NABH"],s:["cabg","valve"],p:"Did Gujarat's first heart transplant. 480 beds."},
+  {n:"Apollo Hospitals International",c:"AMD",acc:["JCI","NABH"],s:["cabg","valve","knee","spine","prostate"],p:"Dedicated international wing on the Gandhinagar highway. Robotic surgery."},
+  {n:"Zydus Hospitals",c:"AMD",acc:[],s:[],p:"Large multi-specialty hospital. Accreditation and international desk to confirm."},
+  {n:"Shalby Hospitals",c:"AMD",acc:[],s:["knee","hip"],p:"Chain focused on joint replacement. Confirm volumes and accreditation."},
+  {n:"Narayana Multispeciality",c:"JAI",acc:["JCI"],s:["cabg","knee","spine"],p:"First JCI-accredited hospital in Rajasthan. Cardiology, neurosciences, orthopaedics."},
+  {n:"Eternal Hospital",c:"JAI",acc:["JCI"],s:["cabg","valve","knee","spine","prostate"],p:"Founded by Dr Samin K. Sharma of Mount Sinai, New York. Popular with international patients."},
+  {n:"Mahatma Gandhi Hospital",c:"JAI",acc:["JCI"],s:[],p:"Teaching hospital, JCI accredited in 2026."},
+  {n:"Fortis Hospital Jaipur",c:"JAI",acc:[],s:[],p:"Fortis group, owned by IHH Healthcare. Accreditation to confirm."}
+];
+
+const SOURCES=[
+ ["UAE prices",[
+  ["Zavis: knee replacement cost in Dubai, Apr 2026","https://www.zavis.ai/guides/knee-replacement-cost-dubai"],
+  ["Zavis: knee vs hip replacement cost in Dubai, Mar 2026","https://www.zavis.ai/pricing/vs/knee-replacement-vs-hip-replacement/dubai"],
+  ["Lyfboat: CABG hospitals and costs in Dubai","https://www.lyfboat.com/hospitals/coronary-bypass-surgery-cabg-hospitals-and-costs-in-dubai/"],
+  ["My 1Health: heart surgery hospitals and costs in Dubai","https://my1health.com/articles/hospitals-heart-surgery-in-dubai"],
+  ["Medigence: valve replacement cost in Dubai","https://medigence.com/hospitals/cardiac-sciences/avr-mvr/united-arab-emirates/dubai"],
+  ["Lyfboat: spine surgery costs in Dubai","https://www.lyfboat.com/hospitals/spinal-surgery-hospitals-and-costs-in-dubai/"],
+  ["Emirates Hospitals Group: spine fusion","https://emirateshospitals.ae/services/spine-surgery/spine-fusion/"],
+  ["Al Zahra Hospital Dubai: bariatric packages","https://azhd.ae/packages/bariatric-packages/"],
+  ["Mediclinic: bariatric packages","https://www.mediclinic.ae/en/corporate/stay/international-patients/mediclinic-international-patients-packages/bariatrics-and-weight-loss-packages.html"],
+  ["CMC Dubai: robotic radical prostatectomy package","https://cmcdubai.ae/packages/robotic-radical-prostatectomy-package/"],
+  ["Lyfboat: prostate cancer treatment cost in Dubai","https://www.lyfboat.com/hospitals/prostate-cancer-hospitals-and-costs-in-dubai/"]]],
+ ["India prices",[
+  ["Vaidam: knee replacement cost in Kochi (also physio INR 500–1,000 per session)","https://www.vaidam.com/cost/knee-replacement-surgery/india/kochi"],
+  ["Vaidam: Medanta knee, Indian vs international patient price","https://www.vaidam.com/search/knee-replacement/india/medanta-medicity-gurgaon"],
+  ["Vaidam: Max Saket bypass, Indian vs international patient price","https://www.vaidam.com/search/heart-bypass-surgery-cabg/india/max-super-speciality-hospital-saket-new-delhi"],
+  ["Shifam Health: hip replacement cost in India","https://shifamhealth.com/total-hip-replacement-surgery-cost-in-india/"],
+  ["HealthyBones: hip replacement cost in India","https://www.healthybones.in/average-hip-replacement-cost-india/"],
+  ["Vaidam: heart bypass cost in India (also extra hospital day USD 200–300)","https://www.vaidam.com/search/heart-bypass-surgery-cabg/india"],
+  ["Lyfboat: CABG cost at Apollo","https://www.lyfboat.com/knowledge-center/heart-bypass-surgery-cost-in-apollo-hospital/"],
+  ["Vaidam: valve replacement cost in India","https://www.vaidam.com/valve-replacement-surgery-cost-india"],
+  ["IndiCure: spinal fusion cost in India","https://www.indicure.com/spinal-fusion-surgery-cost-india/"],
+  ["Medigence: spinal fusion cost in India","https://medigence.com/hospitals/neurology/spinal-fusion-1-level/india"],
+  ["Lyfboat: sleeve gastrectomy cost in India","https://www.lyfboat.com/knowledge-center/sleeve-gastrectomy-surgery-cost-in-india/"],
+  ["Max Healthcare: sleeve gastrectomy cost","https://www.maxhealthcare.in/international/en/cost/sleeve-gastrectomy-cost-in-india"],
+  ["Wellness Destination India: robotic prostatectomy cost","https://wellnessdestinationindia.com/success-story/robotic-radical-prostatectomy-surgery-cost-in-india"],
+  ["My 1Health: robotic urology surgery in India","https://my1health.com/articles/robotic-urology-surgery-in-india-prostatectomy-nephrectomy-cystectomy"],
+  ["Arodya: price variation across Delhi hospitals","https://www.arodya.com/blog/apollo-fortis-max-medanta-delhi-comparison"]]],
+ ["Travel, stay and care",[
+  ["flydubai: Dubai to Kochi fares","https://www.flydubai.com/en-ae/flights-from-dubai-to-kochi/"],
+  ["Google Flights: Dubai to Kochi economy and business","https://www.google.com/travel/flights/flights-from-dubai-to-kochi.html?gl=AE&hl=en"],
+  ["CFYI: home nursing cost in India","https://cfyi.co.in/what-is-the-cost-of-home-nursing-in-india/"],
+  ["Peace Medical Tourism: daily incidentals USD 20","https://peacemedicaltourism.com/treatments/valve-replacement-surgery-cost-in-india"],
+  ["FitTour: accommodation near Indian hospitals","https://fittour.in/guides/apollo-hospital-cost-breakdown"],
+  ["Samarth: home physiotherapy rates, 2026","https://care.samarth.community/medical-care/blog-medical-care-physiotherapy-at-home-cost-bangalore-2026"],
+    ["DCDC: post-surgical home nursing in Dubai","https://doctorsclinicdubai.ae/blog/post-surgical-care-at-home-dubai"],
+  ["Zavis: UAE physiotherapy session prices","https://www.zavis.ai/pricing"],
+  ["Trading Economics: USD/INR","https://tradingeconomics.com/india/currency"]]],
+ ["Fitness to fly",[
+  ["UK Civil Aviation Authority: am I fit to fly","https://www.caa.co.uk/passengers-and-public/passenger-guidance/health-guidance/health-information-for-passengers/passenger-health-faqs-am-i-fit-to-fly/"],
+  ["PMC: air travel after hip and knee replacement","https://pmc.ncbi.nlm.nih.gov/articles/PMC10508977/"]]],
+ ["Hospitals and cities",[
+  ["Karetrip: heart hospitals in Kerala for international patients","https://karetrip.com/blogs/best-heart-hospitals-in-kerala-for-international-patients"],
+  ["Shifam Health: JCI hospitals in Kochi","https://shifamhealth.com/top-jci-accredited-hospitals-in-kochi/"],
+  ["VPS Lakeshore: medical value travel","https://www.vpslakeshorehospital.com/medical-value-travel"],
+  ["KIMSHEALTH Trivandrum","https://www.kimshealth.org/trivandrum/hospital/kimshealth-trivandrum"],
+  ["Wikipedia: Kerala Institute of Medical Sciences","https://en.wikipedia.org/wiki/Kerala_Institute_of_Medical_Sciences"],
+  ["Impact Guru: hospitals in Coimbatore","https://www.impactguru.com/info/best-hospitals-in-coimbatore/"],
+  ["Ganga Hospital","https://www.gangahospital.com/"],
+  ["Niruja HealthTech: accredited hospitals in Coimbatore","https://www.nirujahealthtech.com/best-accredited-hospitals-from-coimbatore/"],
+  ["Marengo CIMS Hospital","https://www.marengoasiahospitals.com/hospital/marengo-cims-hospital-ahmedabad"],
+  ["Medical Tourism Co: Apollo Ahmedabad","https://www.medicaltourismco.com/clinic/india/ahmedabad/apollo-hospital-international-limited-ahmedabad-india/"],
+  ["Wikipedia: Narayana Multispeciality Hospital, Jaipur","https://en.wikipedia.org/wiki/Narayana_Multispeciality_Hospital,_Jaipur"],
+  ["GoMedii: JCI hospitals in India (Eternal)","https://gomedii.com/blogs/english/doctors-hospitals/top-jci-accredited-hospitals-in-india/"],
+  ["Mahatma Gandhi Hospital: JCI accreditation","https://www.mgmch.org/blog/jci-accredited-hospital-india"],
+  ["Dr Prem: tier-2 and tier-3 medical tourism hubs","https://drprem.com/blog/emerging-medical-tourism-hubs-in-india/"]]],
+ ["Members",[
+  ["Embassy of India, Abu Dhabi: Indian community in the UAE","https://www.indembassyuae.gov.in/page/indian-community-in-uae/"],
+  ["Zavis: knee replacement cost in the UAE (co-pay 10–20%)","https://www.zavis.ai/pricing/knee-replacement"]]]
+];
+
+const S={proc:"knee",city:"COK",tier:1,uae:65000,days:21,rate:1,worst:false,fee:3000,feeMode:"share",feeShare:20,wellthy:1000,incentive:0,apt:6500,nurse:3000,transfers:9000,meals:1000,inPhysio:2000,seat:200,vNurse:350,vPhysio:350,vTele:150,
+  uptake:10,onlySave:true,vols:{knee:300,hip:120,cabg:150,valve:60,spine:180,sleeve:400,prostate:80},hCity:"ALL",hProc:"any"};
+const TIER=["value","mid-price","premium"];
+const $=id=>document.getElementById(id);
+const r100=n=>Math.round(n/100)*100;
+function aed(n){const v=r100(n);return (v<0?"−":"")+"AED "+Math.abs(v).toLocaleString("en-US");}
+function aedK(n){const v=n/1e6;return Math.abs(v)>=1?(n<0?"−":"")+"AED "+Math.abs(v).toFixed(1)+"M":aed(n);}
+
+function compute(pk,o){
+  const p=PROCS[pk],c=CITIES[o.city];
+  const hosp=p.hosp+(o.worst?3:0), days=o.days+(o.worst?5:0), rec=Math.max(0,days-hosp);
+  const inPhys=Math.min(p.care.physio,Math.max(0,rec-1)), uaePhys=p.care.physio-inPhys, uaeNurse=Math.ceil(p.care.nurse/2);
+  const it=[];
+  it.push({g:"hosp",l:"Hospital package, "+TIER[o.tier]+(AUD==="insurer"?(o.rate<1?", corridor rate":", list price"):(o.rate<1?", Indian-patient price":", international price"))+", "+hosp+" days",v:p.india[o.tier]*o.rate*USD});
+  if(o.worst) it.push({g:"hosp",l:"Complication reserve: 3 extra hospital days",v:900*USD});
+  if(inPhys) it.push({g:"trudoc",l:"Provider-vetted specialist physio at the apartment, "+inPhys+" sessions",v:o.inPhysio*inPhys*INR});
+  it.push(o.tier===2?{g:"travel",l:"Business class flights for patient and companion",v:2*c.biz}:{g:"travel",l:"Economy flights for patient and companion, extra-legroom seats",v:2*c.eco+4*o.seat});
+  it.push({g:"travel",l:"Two-bedroom serviced apartment, "+days+" nights",v:o.apt*days*INR});
+  it.push({g:"travel",l:"Private nurse at the apartment, "+rec+" days",v:o.nurse*rec*INR});
+  it.push({g:"travel",l:"Airport transfers and hospital follow-up rides",v:o.transfers*INR});
+  it.push({g:"travel",l:"Meals: companion "+days+" days, patient "+rec+" days (hospital meals are in the package)",v:o.meals*(days+rec)*INR});
+  it.push({g:"travel",l:"e-Medical visas, 2 people",v:300});
+  const parts=[];if(uaePhys)parts.push(uaePhys+" physio");if(uaeNurse)parts.push(uaeNurse+" nurse");
+  if(parts.length) it.push({g:"trudoc",l:"Provider home visits after return: "+parts.join(", "),v:uaePhys*o.vPhysio+uaeNurse*o.vNurse});
+  it.push({g:"trudoc",l:"Provider teleconsults before and after, "+p.care.tele,v:p.care.tele*o.vTele});
+  if(p.wellthy) it.push({g:"trudoc",l:p.wellthy,v:o.wellthy});
+  if(o.incentive>0) it.push({g:"incent",l:"Cash incentive to patient",v:o.incentive});
+  const uaeRehab0=p.care.physio*o.vPhysio+p.care.nurse*o.vNurse, uaeTotal0=o.uae+uaeRehab0;
+  const pre=it.reduce((a,b)=>a+b.v,0), gross=uaeTotal0-pre;
+  const fee=o.feeMode==="share"?Math.max(o.fee,gross*o.feeShare/100):o.fee;
+  it.push({g:"trudoc",l:o.feeMode==="share"&&fee>o.fee?"Provider coordination fee, "+o.feeShare+"% of the saving":"Provider coordination fee",v:fee});
+  const total=it.reduce((a,b)=>a+b.v,0);
+  const g={hosp:0,travel:0,trudoc:0,incent:0};it.forEach(x=>g[x.g]+=x.v);
+  const uaeRehab=p.care.physio*o.vPhysio+p.care.nurse*o.vNurse, uaeTotal=o.uae+uaeRehab;
+  return {items:it,total,fee,gross,uaeRehab,uaeTotal,saving:uaeTotal-total,breakeven:total-uaeRehab,trudoc:g.trudoc,groups:g,hospAED:g.hosp,days,hosp,rec,inPhys,uaePhys,uaeNurse};
+}
+function optsFor(pk,override){
+  const p=PROCS[pk];
+  return Object.assign({},S,{uae:p.uae[1],days:p.days},override||{});
+}
+
+/* ---------- build controls ---------- */
+function buildChips(){
+  $("procChips").innerHTML=ORDER.map(k=>`<button class="chip" data-p="${k}" aria-pressed="false">${PROCS[k].short}</button>`).join("");
+  $("cityChips").innerHTML=CORDER.map(k=>`<button class="chip" data-c="${k}" aria-pressed="false">${CITIES[k].name}<span class="code">${k}</span></button>`).join("");
+  $("hCityChips").innerHTML=`<button class="chip" data-hc="ALL" aria-pressed="true">All</button>`+CORDER.map(k=>`<button class="chip" data-hc="${k}" aria-pressed="false">${CITIES[k].name}</button>`).join("");
+  $("hProc").innerHTML=`<option value="any">Any procedure</option>`+ORDER.map(k=>`<option value="${k}">${PROCS[k].name}</option>`).join("");
+  $("procChips").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(!b)return;setProc(b.dataset.p);});
+  $("cityChips").addEventListener("click",e=>{const b=e.target.closest("[data-c]");if(!b)return;S.city=b.dataset.c;render();});
+  $("tierSeg").addEventListener("click",e=>{const b=e.target.closest("[data-t]");if(!b)return;S.tier=+b.dataset.t;render();});
+  $("uaePrice").addEventListener("input",e=>{S.uae=+e.target.value;render();});
+  $("dMinus").addEventListener("click",()=>{S.days=Math.max(PROCS[S.proc].hosp+1,S.days-1);render();});
+  $("dPlus").addEventListener("click",()=>{S.days=Math.min(90,S.days+1);render();});
+  $("feeSeg").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(!b)return;S.feeMode=b.dataset.f;render();});
+  $("rateSeg").addEventListener("click",e=>{const b=e.target.closest("[data-r]");if(!b)return;S.rate=+b.dataset.r;render();});
+  $("worst").addEventListener("change",e=>{S.worst=e.target.checked;render();});
+  ["fee","feeShare","wellthy","incentive","apt","nurse","transfers","meals","inPhysio","seat","vNurse","vPhysio","vTele"].forEach(id=>$(id).addEventListener("input",e=>{const v=parseFloat(e.target.value);S[id]=isNaN(v)?0:Math.max(0,v);render();}));
+  $("uptake").addEventListener("input",e=>{S.uptake=+e.target.value;renderDeal();});
+  $("onlySave").addEventListener("change",e=>{S.onlySave=e.target.checked;renderDeal();});
+  $("hCityChips").addEventListener("click",e=>{const b=e.target.closest("[data-hc]");if(!b)return;S.hCity=b.dataset.hc;renderHospitals();});
+  $("hProc").addEventListener("change",e=>{S.hProc=e.target.value;renderHospitals();});
+  $("league").addEventListener("click",e=>{const tr=e.target.closest("tr[data-p]");if(tr){setProc(tr.dataset.p);window.scrollTo({top:0,behavior:"smooth"});}});
+}
+function setProc(k){const p=PROCS[k];S.proc=k;S.uae=p.uae[1];S.days=p.days;render();}
+
+/* ---------- estimator ---------- */
+function hospitalsFor(city,pk){
+  return HOSP.filter(h=>(city==="ALL"||h.c===city)&&(pk==="any"||!pk||h.s.includes(pk)))
+    .sort((a,b)=>score(b)-score(a));
+}
+function score(h){return (h.acc.some(a=>a.startsWith("JCI"))?2:h.acc.length?1:0)+(h.gulf?.5:0)}
+function hCard(h,showCity){
+  const acc=h.acc.length?h.acc.map(a=>`<span class="badge ${a.startsWith("JCI")?"b-jci":"b-nabh"}">${a}</span>`).join(""):`<span class="badge b-ver">ACCREDITATION: VERIFY</span>`;
+  const gulf=h.gulf?`<span class="badge b-gulf">GULF-LINKED GROUP</span>`:"";
+  const str=h.s.length?h.s.map(k=>`<span class="badge b-str">${PROCS[k].short.toUpperCase()}</span>`).join(""):"";
+  return `<div class="hcard"><div><h4>${h.n}</h4>${showCity?`<div class="city">${CITIES[h.c].name.toUpperCase()} · ${h.c}</div>`:""}</div><div class="badges">${acc}${gulf}</div><p>${h.p}</p>${str?`<div class="badges">${str}</div>`:""}</div>`;
+}
+function renderEstimator(){
+  const p=PROCS[S.proc],c=CITIES[S.city];
+  document.querySelectorAll("#procChips .chip").forEach(b=>b.setAttribute("aria-pressed",b.dataset.p===S.proc));
+  document.querySelectorAll("#cityChips .chip").forEach(b=>b.setAttribute("aria-pressed",b.dataset.c===S.city));
+  document.querySelectorAll("#tierSeg button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.t===S.tier));
+  document.querySelectorAll("#feeSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.f===S.feeMode));
+  $("feeShare").disabled=S.feeMode!=="share";
+  document.querySelectorAll("#rateSeg button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.r===S.rate));
+  const r=$("uaePrice");r.min=p.uae[0];r.max=p.uae[2];r.value=S.uae;
+  $("uaeLo").textContent=aed(p.uae[0]);$("uaeHi").textContent=aed(p.uae[2]);$("uaeVal").textContent=aed(S.uae);
+  $("daysOut").textContent=S.days+" days";
+  $("daysSplit").textContent=`${p.hosp} in hospital, ${Math.max(0,S.days-p.hosp)} recovering before the flight home. Dubai counts hospital nights only; the patient recovers at home there.`;
+  const R=compute(S.proc,S);
+  $("rCode").textContent=S.city;
+  $("passMeta").textContent=`${p.name} · ${R.days} days in ${c.name}, ${R.hosp} in hospital · ${TIER[S.tier]} hospital`;
+  $("uaeTot").textContent=aed(R.uaeTotal);
+  const rp=[];if(p.care.physio)rp.push(p.care.physio+" physio");if(p.care.nurse)rp.push(p.care.nurse+" nurse");
+  $("uaeItems").innerHTML=`<li><i class="dot g-uae"></i><span>Surgery package at a Dubai private hospital: surgeon, anaesthesia, implant or consumables, ${p.uaeStay}</span><span class="v">${aed(S.uae)}</span></li>
+    <li><i class="dot g-uae"></i><span>Rehab at home after discharge: ${rp.join(", ")} visits</span><span class="v">${aed(R.uaeRehab)}</span></li>`;
+  $("uaeNote").textContent="Range: "+p.uaeSrc+". Rehab uses the same visit prices on both sides.";
+  $("inTitle").textContent="The "+c.name+" corridor";
+  $("inTot").textContent=aed(R.total);
+  let shown=R.items;
+  if(AUD==="insurer"){const tr=R.items.filter(x=>x.g==="trudoc");shown=R.items.filter(x=>x.g!=="trudoc").concat([{g:"trudoc",l:"Managed care: coordination, teleconsults, specialist physio in India, home visits after return"+(p.wellthy?", 90-day digital recovery programme":""),v:tr.reduce((a,b)=>a+b.v,0)}]);}
+  $("inItems").innerHTML=shown.map(x=>`<li><i class="dot g-${x.g}"></i><span>${x.l}</span><span class="v">${aed(x.v)}</span></li>`).join("")+
+    `<li><i class="dot" style="background:transparent"></i><span class="note">Package range: ${p.indiaSrc}.${c.fare==="estimate"?" Airfare for "+c.name+" is an estimate.":""}</span><span></span></li>`;
+  const sv=R.saving;
+  $("vSave").textContent=aed(sv);$("vSave").className="big num "+(sv>=0?"pos":"neg");
+  $("vPct").textContent=sv>=0?Math.round(sv/R.uaeTotal*100)+"% of the UAE cost":"Corridor costs more at this UAE price";
+  $("vBreak").textContent=aed(R.breakeven);
+  $("vTru").textContent=aed(R.trudoc);
+  $("vMember").textContent=S.incentive>0?"+"+aed(S.incentive):"AED 0";
+  $("vMemberNote").textContent=S.incentive>0?"Member receives a cash incentive. Travel, stay and care are covered.":"Flights, stay and care are covered";
+  $("feeNote").textContent=S.feeMode==="share"?`The provider takes ${S.feeShare}% of the ${aed(R.gross)} saving, never less than ${aed(S.fee)}. The insurer keeps the rest.`:"A flat fee per case, whatever the saving.";
+  // bars
+  const max=Math.max(R.uaeTotal,R.total);
+  $("barU").innerHTML=`<span class="g-uae" style="width:${R.uaeTotal/max*100}%"></span>`;
+  $("barUv").textContent=aed(R.uaeTotal);
+  const seg=(v,cls)=>v>0?`<span class="${cls}" style="width:${v/max*100}%"></span>`:"";
+  $("barI").innerHTML=seg(R.groups.hosp,"g-hosp")+seg(R.groups.travel,"g-travel")+seg(R.groups.trudoc,"g-trudoc")+seg(R.groups.incent,"g-incent")+(sv>0?seg(sv,"hatch"):"");
+  $("barIl").textContent=c.name;
+  $("barIv").textContent=aed(R.total);
+  // fly flag
+  let f=`<b>Fit to fly.</b> ${p.fly}`;
+  if(p.joint){
+    const six=compute(S.proc,Object.assign({},S,{days:Math.max(S.days,42)}));
+    f+=` If the surgeon asks for 6 weeks in India, the saving becomes <b class="num">${aed(six.saving)}</b>.`;
+  }
+  $("flyFlag").innerHTML=f;
+  // league
+  const rows=ORDER.map(k=>{const o=optsFor(k);return {k,R:compute(k,o)};});
+  const vals=rows.map(x=>x.R.saving),mn=Math.min(0,...vals),mx=Math.max(0,...vals),span=mx-mn||1,z=(0-mn)/span*100;
+  $("league").querySelector("tbody").innerHTML=rows.map(x=>{
+    const s=x.R.saving,l=s>=0?z:(s-mn)/span*100,w=Math.abs(s)/span*100;
+    return `<tr class="click${x.k===S.proc?" sel":""}" data-p="${x.k}"><td>${PROCS[x.k].name}</td><td class="r">${aed(x.R.uaeTotal)}</td><td class="r">${aed(x.R.total)}</td><td class="r ${s>=0?"pos":"neg"}">${aed(s)}</td><td class="note">${PROCS[x.k].flyShort}</td>
+      <td><div class="lbar"><span class="b" style="left:${l}%;width:${w}%;background:var(${s>=0?"--good":"--bad"})"></span><span class="zero" style="left:${z}%"></span></div></td></tr>`;}).join("");
+  // hospitals mini
+  let hs=hospitalsFor(S.city,S.proc);
+  const note=hs.length?"":`<p class="note">No hospital in ${c.name} is confirmed for this procedure yet. Showing all ${c.name} hospitals.</p>`;
+  if(!hs.length) hs=hospitalsFor(S.city,"any");
+  $("hmTitle").textContent=`${p.name} in ${c.name}`;
+  $("hospMini").innerHTML=note+hs.slice(0,4).map(h=>hCard(h,false)).join("");
+}
+
+/* ---------- deal ---------- */
+function renderDeal(){
+  $("uptakeOut").textContent=S.uptake+"%";
+  let T={cases:0,save:0,rev:0,hosp:0,base:0};
+  const body=ORDER.map(k=>{
+    const R=compute(k,optsFor(k));
+    const inc=!(S.onlySave&&R.saving<=0);
+    const moved=inc?Math.round(S.vols[k]*S.uptake/100):0;
+    const sv=moved*R.saving,rv=moved*R.trudoc,hp=moved*R.hospAED;
+    T.cases+=moved;T.save+=sv;T.base+=moved*R.uaeTotal;T.rev+=rv;T.hosp+=hp;
+    return `<tr${inc?"":' style="opacity:.5"'}><td>${PROCS[k].name}</td><td class="r"><input class="vol" type="number" min="0" step="10" id="vol-${k}" data-k="${k}" value="${S.vols[k]}" aria-label="Eligible ${PROCS[k].name} cases per year"></td>
+      <td class="r ${R.saving>=0?"pos":"neg"}">${aed(R.saving)}</td><td class="r">${moved}</td><td class="r">${aedK(sv)}</td>${AUD==="trudoc"?`<td class="r">${aedK(rv)}</td>`:""}</tr>`;}).join("");
+  const tb=$("deal").querySelector("tbody");
+  const focused=document.activeElement&&document.activeElement.classList.contains("vol")?document.activeElement.id:null;
+  tb.innerHTML=body;
+  if(focused){const el=$(focused);if(el){el.focus();const v=el.value;el.value="";el.value=v;}}
+  $("deal").querySelector("tfoot").innerHTML=`<tr><td>Total</td><td></td><td></td><td class="r">${T.cases}</td><td class="r pos">${aedK(T.save)}</td>${AUD==="trudoc"?`<td class="r">${aedK(T.rev)}</td>`:""}</tr>`;
+  $("tCases").textContent=T.cases.toLocaleString("en-US");
+  $("tSave").textContent=aedK(T.save);
+  $("tRev").textContent=aedK(T.rev);
+  $("tHosp").textContent=aedK(T.hosp);
+  $("tPct").textContent=T.base?Math.round(T.save/T.base*100)+"%":"–";
+  $("tAvg").textContent=T.cases?aed(T.save/T.cases):"–";
+}
+document.addEventListener("input",e=>{if(e.target.classList&&e.target.classList.contains("vol")){const v=parseInt(e.target.value,10);S.vols[e.target.dataset.k]=isNaN(v)?0:Math.max(0,v);renderDeal();}});
+
+/* ---------- journey ---------- */
+function renderJourney(){
+  const p=PROCS[S.proc],c=CITIES[S.city],R=compute(S.proc,S);
+  $("jTitle").textContent=`${p.name}: Dubai to ${c.name} and back`;
+  $("jSub").textContent=`Day 0 is the flight out. Timings follow the ${R.days}-day plan on the estimator. Filled circles are provider steps.`;
+  const steps=[
+    ["−21","trudoc","Case flagged",(AUD==="insurer"?"Your":"The insurer's")+" pre-authorisation team or a provider doctor flags an eligible planned surgery and offers the corridor."],
+    ["−20","trudoc","Provider teleconsult","Doctor reviews history, explains the option, and packages reports and scans for the partner hospital."],
+    ["−14","hospital","Remote surgeon review","The Indian surgeon reviews the file by video and sends a written, all-in quote."],
+    ["−10","insurer","Approval and visas",(AUD==="insurer"?"You approve":"Insurer approves")+" against the quote. The provider files e-Medical visas for patient and companion."],
+    ["0","travel",`Fly DXB → ${S.city}`,(S.tier===2?"Business class":"Economy with extra-legroom seats")+" for patient and companion. Met on arrival and taken to the apartment."],
+    ["1","hospital","Surgery",`Admission and surgery. ${R.hosp} days in hospital${S.worst?", including a complication reserve":""}.`],
+    [`${R.hosp+1}–${R.days-1}`,"trudoc","Recovery in the apartment",(R.inPhys?R.inPhys+" Provider-vetted specialist physio sessions at the apartment. ":"")+"Private nurse at the apartment. Provider doctor checks in by video every few days and holds the notes."],
+    [String(R.days),"hospital","Fit-to-fly sign-off","Surgeon clears the return flight and hands over discharge notes in English."],
+    [`${R.days+1}–${R.days+30}`,"trudoc","Care at home in the UAE",[R.uaePhys?R.uaePhys+" physio visits":"",R.uaeNurse?R.uaeNurse+" nursing visits":"",p.care.tele+" teleconsults"].filter(Boolean).join(", ")+", delivered by the provider."],
+    [`${R.days+90}`,"trudoc",AUD==="insurer"?"Outcome report to you":"Outcome report to the insurer",AUD==="insurer"?"Complications, readmissions and member score for each case, so you can audit the programme.":"Complications, readmissions and patient score for each case. This is the evidence that renews the contract."]
+  ];
+  const lbl={trudoc:"Provider",hospital:"Hospital",insurer:"Insurer",travel:"Travel"};
+  $("timeline").innerHTML=steps.map(s=>`<li class="own-${s[1]}"><span class="tday">Day ${s[0]}</span><span class="tnode"></span><div class="tbody"><h4>${s[2]} <span class="owner o-${s[1]}">${lbl[s[1]]}</span></h4><p>${s[3]}</p></div></li>`).join("");
+  $("revSub").textContent=`Per ${p.name.toLowerCase()} case, at the rates on the estimator.`;
+  const tr=R.items.filter(x=>x.g==="trudoc");
+  $("revItems").innerHTML=tr.map(x=>`<li><i class="dot g-trudoc"></i><span>${x.l}</span><span class="v">${aed(x.v)}</span></li>`).join("")+`<li><i class="dot" style="background:transparent"></i><b>Total Provider revenue</b><span class="v"><b>${aed(R.trudoc)}</b></span></li>`;
+}
+
+/* ---------- members ---------- */
+function renderMembers(){
+  if(AUD!=="insurer")return;
+  const p=PROCS[S.proc],c=CITIES[S.city],R=compute(S.proc,S);
+  $("memberCard").innerHTML=`<h3>What a member sees: ${p.name.toLowerCase()} in ${c.name}</h3>
+    <ul><li>${R.days} days away, ${R.hosp} of them in hospital, at an accredited partner hospital.</li>
+    <li>${S.tier===2?"Business class":"Economy flights with extra-legroom seats"} for the member and one companion.</li>
+    <li>A two-bedroom apartment, a private nurse${R.inPhys?" and "+R.inPhys+" physio sessions":""} during recovery.</li>
+    <li>Member pays ${S.incentive>0?"nothing and receives "+aed(S.incentive):"AED 0"}. Care continues at home after return.</li></ul>
+    <p class="note" style="margin:0">Changes with the procedure and city chosen on the case estimator.</p>`;
+  $("copayFig").textContent=`On a ${aed(S.uae)} ${p.short.toLowerCase()} package, 10 to 20% is ${aed(S.uae*.1)} to ${aed(S.uae*.2)}, before any plan cap.`;
+  $("supportTxt").textContent=`A two-bedroom apartment, a private nurse and physio at the apartment during recovery. In the UAE, the member goes home after ${p.uaeStay.replace(" in hospital","").replace(", including intensive care","")} and family arranges care.`;
+}
+
+/* ---------- hospitals ---------- */
+function renderHospitals(){
+  document.querySelectorAll("#hCityChips .chip").forEach(b=>b.setAttribute("aria-pressed",b.dataset.hc===S.hCity));
+  $("hProc").value=S.hProc;
+  const hs=hospitalsFor(S.hCity,S.hProc);
+  $("hospAll").innerHTML=hs.length?hs.map(h=>hCard(h,true)).join(""):`<p class="note">No confirmed match. Try another city or procedure.</p>`;
+  $("cityTable").innerHTML=CORDER.map(k=>{const c=CITIES[k];return `<tr><td>${c.name}</td><td class="mono">${k}</td><td>${c.why}</td><td>${c.watch}</td></tr>`;}).join("");
+}
+
+/* ---------- sources ---------- */
+function renderSources(){
+  $("srcList").innerHTML="<h2>Sources</h2>"+SOURCES.map(g=>`<h3>${g[0]}</h3><ol>${g[1].map(s=>`<li><a href="${s[1]}" target="_blank" rel="noopener">${s[0]}</a></li>`).join("")}</ol>`).join("");
+}
+
+/* ---------- tabs ---------- */
+function showTab(t){
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===t));
+  document.querySelectorAll("[role=tabpanel]").forEach(p=>p.hidden=p.id!=="p-"+t);
+  if(t==="journey")renderJourney();
+  if(t==="deal")renderDeal();
+}
+document.querySelector("nav.tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;showTab(b.dataset.tab);});
+
+function render(){renderEstimator();renderDeal();renderJourney();renderMembers();}
+buildChips();render();renderHospitals();renderSources();
+const h=(location.hash||"").slice(1);if(["estimator","deal","members","journey","hospitals","sources"].includes(h))showTab(h);
+})();
+</script>
+</html>
