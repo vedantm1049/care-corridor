@@ -6,6 +6,26 @@ Care Corridor is a live model that answers that question per procedure, per city
 
 ![Case estimator](docs/estimator.png)
 
+## Who this is for
+
+- **Insurers and employers in the GCC** deciding whether a planned-surgery travel benefit is worth offering, and for which procedures. Enter your own paid rates and case counts, and the model tells you where the saving is real and where it is not.
+- **Care providers and medical travel coordinators** sizing a GCC-to-India line: saving per case, revenue per case, and which procedures to lead with.
+- **UAE residents paying for surgery themselves** who want the full cost of a trip, not just the hospital quote. Flights, a companion, the recovery stay, a nurse and physio are all counted. This is a cost guide, not medical advice.
+- **Anyone modelling another medical travel route**, such as the UAE to Turkey or Thailand. The prices, stays, hospitals and cities live in one place, so swapping in another destination is a data change, not a rebuild.
+
+## Reuse the data
+
+The research is also published as plain spreadsheets in [`data/`](data), so it can be used without the page:
+
+| File | What is in it |
+|---|---|
+| `procedures.csv` | UAE and India price ranges, hospital and in-country days, rehab visits and fit-to-fly guidance for 7 procedures |
+| `hospitals.csv` | 21 hospitals in 5 cities, with accreditation, whether it was confirmed, known strengths and Gulf links |
+| `cities.csv` | Airfares from Dubai, why each city was chosen, and what to watch out for |
+| `sources.csv` | Every source behind the numbers, with links |
+
+Prices and accreditations change. Corrections are welcome as issues, with a source link.
+
 ## Why this exists
 
 UAE residents already travel to India for surgery, mostly on their own, paying up front and arranging everything themselves. Coordinators such as Vaidam and Lyfboat sell the trip but hand the patient over at the airport. A UAE provider that already holds insurer contracts could own the whole journey: the consult before travel, recovery oversight in India, and rehab at home after return. The open question was whether the numbers work once everything is counted fairly.
@@ -83,7 +103,7 @@ Insurers pay less than retail in the UAE, so real savings will be lower than sho
 
 No build tools or dependencies are needed. Open `index.html` or `insurers.html` in a browser.
 
-To change the model, edit `src/care-corridor.html` and run:
+To change the model, edit the data at the top of the script in `src/care-corridor.html` (`PROCS`, `CITIES`, `HOSP`, `SOURCES`) and run:
 
 ```
 python3 build.py

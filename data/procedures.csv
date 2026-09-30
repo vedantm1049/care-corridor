@@ -1,0 +1,8 @@
+procedure,uae_low_aed,uae_typical_aed,uae_high_aed,india_value_usd,india_mid_usd,india_premium_usd,days_in_hospital,days_in_india_default,physio_visits,nurse_visits,teleconsults,fit_to_fly,uae_price_sources,india_price_sources
+Knee replacement,40000,65000,100000,3000,4000,6000,4,21,18,3,3,6 wk (UK) · 2–3 wk in packages,"Zavis Dubai price guide, Mar–Apr 2026","Vaidam, Kochi-specific range"
+Hip replacement,45000,75000,120000,3500,5000,7000,6,21,16,3,3,6 wk (UK) · 2–3 wk in packages,"Zavis Dubai price guide, Mar 2026","Shifam Health, HealthyBones (India range)"
+Heart bypass (CABG),80000,130000,200000,4000,5500,7500,7,18,8,6,4,about 10 days,Lyfboat (AED 80k–150k); American Hospital and King's (AED 150k–200k),"Vaidam (USD 4k–6k), Apollo Delhi (USD 5.8k–7.5k)"
+Heart valve replacement,103000,150000,200000,6000,8000,11000,8,18,8,6,4,about 10 days,Medigence (USD 28k–45k); Burjeel (AED 150k–200k),"Vaidam (USD 8k–11k), IndiCure (from USD 4.5k)"
+Spinal fusion,50000,80000,120000,4500,6500,9500,4,12,16,3,3,2–6 wk,Lyfboat (AED 50k–120k); Emirates Hospitals (AED 40k–300k),"IndiCure (from USD 4.5k), Medigence (USD 6.5k–9.5k)"
+Sleeve gastrectomy,29000,35000,45000,3500,5000,6500,3,7,0,2,6,1–2 days,"Al Zahra (AED 29k), Mediclinic package (AED 35k)","Lyfboat (USD 4.8k), Max (from USD 5.5k)"
+Robotic prostatectomy,59000,80000,147000,5500,7500,12500,3,10,0,4,3,"after catheter out, ~1 wk",CMC Dubai package (AED 80k); Lyfboat (USD 16k–40k),"Wellness Destination (USD 5.5k–6.5k), My 1Health (USD 6.5k–12.5k)"
